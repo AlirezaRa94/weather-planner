@@ -51,7 +51,10 @@ export function useWeather(query) {
 
     setError(null);
 
-    if (query.length < 3) return;
+    if (query.length < 3) {
+      setWeatherData({});
+      return;
+    }
 
     fetchWeather(query);
 
