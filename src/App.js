@@ -1,6 +1,6 @@
-import { useState } from 'react';
 import { useWeather } from './useWeather';
 import WeatherCard from './WeatherCard';
+import { useLocalStorageState } from './useLocalStorageState';
 
 function Loader() {
   return <p className='loader'>Loading...</p>;
@@ -28,7 +28,7 @@ function SearchBar({ query, setQuery }) {
 }
 
 export default function App() {
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useLocalStorageState('weather-app-query', '');
   const { displayLocation, weatherData, isLoading, error } = useWeather(query);
 
   return (
