@@ -1,5 +1,43 @@
 import { useState } from 'react';
 
+function Day({ date, max_temp, min_temp, code }) {
+  return (
+    <li className='day'>
+      <span>{code}</span>
+      <p>{date}</p>
+      <p>
+        {Math.floor(min_temp)}&deg; &mdash; {Math.ceil(max_temp)}&deg;
+      </p>
+    </li>
+  );
+}
+
+function WeatherCard({ weatherData, location }) {
+  const {
+    temperature_2m_min: min_temps,
+    temperature_2m_max: max_temps,
+    time: dates,
+    weathercode: codes,
+  } = weatherData;
+
+  return (
+    <div>
+      <h2>Weather {location}</h2>
+      <ul className='weather'>
+        {dates.map((date, i) => (
+          <Day
+            key={date}
+            date={date}
+            code={codes.at(i)}
+            max_temp={max_temps.at(i)}
+            min_temp={min_temps.at(i)}
+          />
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 export default function App() {
   const [location, setLocation] = useState('');
   const [displayLocation, setDisplayLocation] = useState('');
@@ -63,6 +101,9 @@ export default function App() {
       <button onClick={fetchWeather}>Get Weather</button>
 
       {isLoading && <p>Loading...</p>}
+      {weatherData?.weathercode && (
+        <WeatherCard weatherData={weatherData} location={displayLocation} />
+      )}
     </div>
   );
 }
