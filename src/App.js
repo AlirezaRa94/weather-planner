@@ -62,6 +62,18 @@ function WeatherCard({ weatherData, location }) {
   );
 }
 
+function Loader() {
+  return <p className='loader'>Loading...</p>;
+}
+
+function ErrorMessage({ message }) {
+  return (
+    <p className='error'>
+      <span>🛑</span> {message}
+    </p>
+  );
+}
+
 export default function App() {
   const [location, setLocation] = useState('');
   const [displayLocation, setDisplayLocation] = useState('');
@@ -82,6 +94,7 @@ export default function App() {
   }
 
   async function fetchWeather() {
+    setError(null);
     try {
       setIsLoading(true);
       // 1) Getting location (geocoding)
@@ -89,7 +102,6 @@ export default function App() {
         `https://geocoding-api.open-meteo.com/v1/search?name=${location}`
       );
       const geoData = await geoRes.json();
-      console.log(geoData);
 
       if (!geoData.results) throw new Error('Location not found');
 
@@ -101,10 +113,11 @@ export default function App() {
       const weatherRes = await fetch(
         `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&timezone=${timezone}&daily=weathercode,temperature_2m_max,temperature_2m_min`
       );
+      if (!weatherRes.ok)
+        throw new Error('Something went wrong while fetching weather data!');
       const weatherData = await weatherRes.json();
       setWeatherData(weatherData.daily);
     } catch (err) {
-      console.err(err);
       setError(err.message);
     } finally {
       setIsLoading(false);
@@ -124,8 +137,9 @@ export default function App() {
       </div>
       <button onClick={fetchWeather}>Get Weather</button>
 
-      {isLoading && <p>Loading...</p>}
-      {weatherData?.weathercode && (
+      {error && <ErrorMessage message={error} />}
+      {isLoading && <Loader />}
+      {!error && !isLoading && weatherData?.weathercode && (
         <WeatherCard weatherData={weatherData} location={displayLocation} />
       )}
     </div>
