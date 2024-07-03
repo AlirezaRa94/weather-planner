@@ -14,31 +14,27 @@ function ErrorMessage({ message }) {
   );
 }
 
+function SearchBar({ query, setQuery }) {
+  return (
+    <div>
+      <input
+        value={query}
+        type='text'
+        placeholder='Search from location'
+        onChange={(e) => setQuery(e.target.value)}
+      />
+    </div>
+  );
+}
+
 export default function App() {
-  const [location, setLocation] = useState('');
-  const { displayLocation, weatherData, isLoading, error, fetchWeather } =
-    useWeather();
-
-  function handleLocationChange(e) {
-    setLocation(e.target.value);
-  }
-
-  function handleClick() {
-    fetchWeather(location);
-  }
+  const [query, setQuery] = useState('');
+  const { displayLocation, weatherData, isLoading, error } = useWeather(query);
 
   return (
     <div className='app'>
       <h1>Weather Planner</h1>
-      <div>
-        <input
-          value={location}
-          type='text'
-          placeholder='Search from location'
-          onChange={handleLocationChange}
-        />
-      </div>
-      <button onClick={handleClick}>Get Weather</button>
+      <SearchBar query={query} setQuery={setQuery} />
 
       {error && <ErrorMessage message={error} />}
       {isLoading && <Loader />}
